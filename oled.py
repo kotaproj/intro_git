@@ -16,6 +16,10 @@ import adafruit_ssd1306
 import pandas as pd
 import matplotlib as plt
 
+# debug
+import sys
+from icecream import ic
+
 # OLED設定
 DISP_WIDTH = 128
 DISP_HEIGHT = 64
@@ -36,6 +40,7 @@ class OledThread(threading.Thread):
     を取得すると、ブザー音を300msec鳴らす
     """
     def __init__(self):
+        ic()
         threading.Thread.__init__(self)
         self.stop_event = threading.Event()
         self.setDaemon(True)
@@ -65,6 +70,7 @@ class OledThread(threading.Thread):
         return
 
     def stop(self):
+        ic()
         self.stop_event.set()
         # cleanup
         self._oled.fill(0)
@@ -73,9 +79,11 @@ class OledThread(threading.Thread):
 
 
     def run(self):
+        ic()
         while True:
             item = self.rcv_que.get()
-            print("[oled_th]", "run : get : ", item)
+            ic(sys._getframe().f_code.co_filename, sys._getframe().f_code.co_name, item)
+            # print("[oled_th]", "run : get : ", item)
             
             if "oled" not in item["type"]:
                 print("[oled_th]", "error : type")
@@ -89,12 +97,12 @@ class OledThread(threading.Thread):
         return self._rcv_que
 
     def _recvice(self, item):
+        ic()
         val_time = int(item["time"]) / 1000
         val_disp = item["disp"]
 
         def display_ip():
-
-            # This function allows us to grab any of our IP addresses
+            ic()
             def get_ip_address(ifname):
                 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 return socket.inet_ntoa(

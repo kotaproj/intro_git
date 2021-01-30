@@ -3,11 +3,16 @@ import threading
 from systems import SystemsData
 import ast
 
+# debug
+import sys
+from icecream import ic
+
 class PreThread(threading.Thread):
     """
     プレゼンター
     """
     def __init__(self, snd_ques={}):
+        ic()
         threading.Thread.__init__(self)
         self.stop_event = threading.Event()
         self.setDaemon(True)
@@ -18,11 +23,13 @@ class PreThread(threading.Thread):
         return
 
     def stop(self):
+        ic()
         self.stop_event.set()
         return
 
 
     def run(self):
+        ic()
         while True:
             # time.sleep(0.050)
             item = self.rcv_que.get()
@@ -37,11 +44,11 @@ class PreThread(threading.Thread):
         return
     
     def _recvice_sw(self, item):
-        print("[pre_th]", "run : _recvice_sw")
+        ic()
 
         def send_que_sw_red():
             if "oled" not in self._snd_ques:
-                print("[pre_th]", "que not found!", "send_que_oled")
+                ic(sys._getframe().f_code.co_filename, sys._getframe().f_code.co_name, "que not found!")
                 return
             val_time = "3000"
             val_disp = "ip"
@@ -50,7 +57,7 @@ class PreThread(threading.Thread):
 
         def send_que_sw_blue():
             if "oled" not in self._snd_ques:
-                print("[pre_th]", "que not found!", "send_que_oled")
+                ic(sys._getframe().f_code.co_filename, sys._getframe().f_code.co_name, "que not found!")
                 return
             val_time = "3000"
             val_disp = self._sysdat.get_next_display()
@@ -63,15 +70,16 @@ class PreThread(threading.Thread):
         elif "blue" in name:
             send_que_sw_blue()
         else:
-            print("[pre_th]", "command not found!", name)
+            ic(sys._getframe().f_code.co_filename, sys._getframe().f_code.co_name, "command not found!", name)
         return
     
     def _recvice_subsc(self, item):
-        print("[pre_th]", "run : _recvice_subsc")
+        ic()
 
         def send_que_led(action):
+            ic()
             if "led" not in self._snd_ques:
-                print("[pre_th]", "que not found!", "send_que_led")
+                ic(sys._getframe().f_code.co_filename, sys._getframe().f_code.co_name, "que not found!")
                 return
             val_name = "red" if "red" in action else "blue"
             val_act = "on" if "on" in action else "off"
@@ -79,8 +87,9 @@ class PreThread(threading.Thread):
             return
 
         def send_que_buzzer(action):
+            ic()
             if "buzzer" not in self._snd_ques:
-                print("[pre_th]", "que not found!", "send_que_buzzer")
+                ic(sys._getframe().f_code.co_filename, sys._getframe().f_code.co_name, "que not found!")
                 return
             val_time = "500" if "short" in action else "3000"
             val_bfreq = "10000"
@@ -88,9 +97,9 @@ class PreThread(threading.Thread):
             return
 
         def send_que_servo(action):
-            print("[pre_th]", "run : send_que_servo")
+            ic()
             if "servo" not in self._snd_ques:
-                print("[pre_th]", "que not found!", "send_que_servo")
+                ic(sys._getframe().f_code.co_filename, sys._getframe().f_code.co_name, "que not found!")
                 return
             val_name = "left" if "left" in action else "right"
             val_act = "raise" if "raise" in action else "down"
@@ -98,9 +107,9 @@ class PreThread(threading.Thread):
             return
 
         def send_que_dcm(action):
-            print("[pre_th]", "run : send_que_dcm")
+            ic()
             if "dcm" not in self._snd_ques:
-                print("[pre_th]", "que not found!", "send_que_dcm")
+                ic(sys._getframe().f_code.co_filename, sys._getframe().f_code.co_name, "que not found!")
                 return
 
             acts = ["forward", "back", "stop", "left", "right", "brake"]
@@ -115,9 +124,9 @@ class PreThread(threading.Thread):
             return
 
         def send_que_oled(action):
-            print("[pre_th]", "run : send_que_oled")
+            ic()
             if "oled" not in self._snd_ques:
-                print("[pre_th]", "que not found!", "send_que_oled")
+                ic(sys._getframe().f_code.co_filename, sys._getframe().f_code.co_name, "que not found!")
                 return
             val_time = "3000"
             val_disp = action.replace("oled_", "")
@@ -126,7 +135,7 @@ class PreThread(threading.Thread):
             return
 
         def store_twilite(msg):
-            print("[pre_th]", "run : store_pi0")
+            ic()
             veranda = ast.literal_eval(msg)
             self._sysdat.veranda_temp = veranda["temp"]
             self._sysdat.veranda_hum = veranda["hum"]
@@ -134,7 +143,7 @@ class PreThread(threading.Thread):
             return
 
         def store_pi0(msg):
-            print("[pre_th]", "run : store_pi0")
+            ic()
             room = ast.literal_eval(msg)
             self._sysdat.room_temp = room["temp"]
             self._sysdat.room_hum = room["hum"]
@@ -142,15 +151,14 @@ class PreThread(threading.Thread):
             return
 
         def store_co2m(msg):
-            print("[pre_th]", "run : store_co2m")
+            ic()
             room = ast.literal_eval(msg)
             self._sysdat.room_co2 = room["co2"]
             return
 
         def store_webmanga(msg):
-            print("[pre_th]", "run : store_webmanga")
+            ic()
             # 内部に保存
-            print(msg)
             webm = ast.literal_eval(msg)
             self._sysdat.set_webm(webm["title"], webm["episode"])
 
@@ -161,7 +169,7 @@ class PreThread(threading.Thread):
             return
 
         action = item["action"]
-        print("item :", item)
+        ic(sys._getframe().f_code.co_filename, sys._getframe().f_code.co_name, item)
         if "buzzer" in action:
             send_que_buzzer(action)
         elif "servo" in action:
@@ -181,7 +189,7 @@ class PreThread(threading.Thread):
         elif "webmanga" in action:
             store_webmanga(item["msg"])
         else:
-            print("[pre_th]", "command not found!", action)
+            ic(sys._getframe().f_code.co_filename, sys._getframe().f_code.co_name, "command not found!")
         return
     
     
@@ -205,57 +213,6 @@ def main():
     pre_th.stop()
    
     return
-
-
-
-# def main():
-#     import time
-
-#     from led import LedThread
-
-#     led_th = LedThread()
-#     led_th.start()
-#     que_led = led_th.rcv_que
-
-#     pre_th = PreThread({"led": que_led})
-#     pre_th.start()
-
-
-
-#     q = pre_th.rcv_que
-#     q.put("123")
-#     time.sleep(1)
-
-
-#     q.put({"type": "led", "name": "red", "action": "on"})
-#     time.sleep(1)
-#     q.put({"type": "led", "name": "red", "action": "off"})
-#     time.sleep(1)
-#     q.put({"type": "led", "name": "blue", "action": "on"})
-#     time.sleep(1)
-#     q.put({"type": "led", "name": "blue", "action": "off"})
-#     time.sleep(1)
-
-#     led_th.stop()
-
-
-
-
-#     pre_th = PreThread()
-#     pre_th.start()
-#     q = pre_th.rcv_que
-#     q.put("123")
-#     time.sleep(1)
-
-#     for i in range(5):
-#         q.put(i)
-#         time.sleep(1)
-#     pre_th.stop()
-   
-#     return
-
-
-
 
 if __name__ == "__main__":
     main()

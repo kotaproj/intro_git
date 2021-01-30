@@ -1,11 +1,15 @@
+# debug
+import sys
+from icecream import ic
+
 class SystemsData:
     _instance = None
     inited = False
 
     def __init__(self):
-        print("SystemData - init")
+        ic()
         if False == SystemsData.inited:
-            print("SystemData - init - if")
+            ic()
             self.__display = "clear"
             self.__room = {}
             self.__room["temp"] = "no data"
@@ -51,23 +55,6 @@ class SystemsData:
 
         self.__display = conv_tbl[self.__display]["next"]
         return self.__display
-
-
-    # @property
-    # def room(self):
-    #     return self.__room
-    
-    # def set_room(self, stemp, shum, spressure):
-    #     self.__room["temp"] = stemp
-    #     self.__room["hum"] = shum
-    #     self.__room["pressure"] = spressure
-    #     return
-
-    # def get_room(self, stemp, shum, spressure):
-    #     self.__room["temp"] = stemp
-    #     self.__room["hum"] = shum
-    #     self.__room["pressure"] = spressure
-    #     return
 
     @property
     def room_temp(self):
@@ -167,20 +154,14 @@ def main():
 
     sysdat = SystemsData()
     
-    print("room_temp :", sysdat.room_temp)
-    print("room_hum :", sysdat.room_hum)
-    print("room_pressure :", sysdat.room_pressure)
-    print("room_co2 :", sysdat.room_co2)
+    ic(sysdat.room_temp, sysdat.room_hum, sysdat.room_pressure, sysdat.room_co2)
 
     sysdat.room_temp = "0"
     sysdat.room_hum = "1"
     sysdat.room_pressure = "2"
     sysdat.room_co2 = "3"
 
-    print("room_temp :", sysdat.room_temp)
-    print("room_hum :", sysdat.room_hum)
-    print("room_pressure :", sysdat.room_pressure)
-    print("room_co2 :", sysdat.room_co2)
+    ic(sysdat.room_temp, sysdat.room_hum, sysdat.room_pressure, sysdat.room_co2)
 
     return
 

@@ -1,4 +1,7 @@
 import time
+# debug
+import sys
+from icecream import ic
 
 from presenter import PreThread
 
@@ -12,6 +15,9 @@ from sw import SwThread
 from subscribe import SubscThread
 
 def main():
+
+    # debug
+    ic.disable()
 
     # 出力側のスレッド - メッセージを受け取る
     out_ths = {}

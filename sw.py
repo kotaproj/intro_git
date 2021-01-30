@@ -3,6 +3,10 @@ import threading
 import pigpio
 import time
 
+# debug
+import sys
+from icecream import ic
+
 # SWのピン設定
 PIN_RED_SW = 5
 PIN_BLUE_SW = 6
@@ -20,6 +24,7 @@ class SwThread(threading.Thread):
     タクトスイッチ管理
     """
     def __init__(self, snd_que=None):
+        ic()
         threading.Thread.__init__(self)
         self.stop_event = threading.Event()
         self.setDaemon(True)
@@ -40,23 +45,27 @@ class SwThread(threading.Thread):
 
 
     def stop(self):
+        ic()
         self.stop_event.set()
         self._pi.stop()
         return
 
 
     def run(self):
+        ic()
         while True:
             time.sleep(0.050)
             for name in self._sw:
                 if self._read_poll(name):
-                    print("[sw_th]", "pushed - ", name)
+                    ic()
+                    ic("[sw_th]", "pushed - ", name)
         return
     
     def _send_msg(self, name):
         if self._snd_que is None:
             return
-        print("[sw_th]", "_send_msg:", name)
+        ic()
+        ic("[sw_th]", "_send_msg:", name)
         self._snd_que.put({"type": "sw", "name": name})
         return
 
